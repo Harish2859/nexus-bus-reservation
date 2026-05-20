@@ -1,19 +1,15 @@
 import React from 'react';
 
 export default function BusResultCard({ schedule, isSelected, onSelectToggle }) {
-    const formatTime = (isoString) => {
-        return new Date(isoString).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
+    const formatTime = (isoString) => new Date(isoString).toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: true
+    });
 
     const calculateDuration = (depart, arrive) => {
         const diffMs = new Date(arrive) - new Date(depart);
-        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-        const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        return `${diffHrs}h ${diffMins}m`;
+        const h = Math.floor(diffMs / (1000 * 60 * 60));
+        const m = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        return `${h}h ${m}m`;
     };
 
     const lowestFare = Math.min(
@@ -22,63 +18,64 @@ export default function BusResultCard({ schedule, isSelected, onSelectToggle }) 
     );
 
     return (
-        <div className={`w-full bg-slate-900/60 border rounded-2xl p-6 transition-all duration-200 mb-4 ${
-            isSelected ? 'border-cyan-500 shadow-xl shadow-cyan-950/20' : 'border-slate-800 hover:border-slate-700'
+        <div className={`bg-white border rounded-t-xl transition-all ${
+            isSelected ? 'border-blue-500 border-b-0' : 'border-gray-200 rounded-b-xl mb-4 hover:border-gray-300 hover:shadow-sm'
         }`}>
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
 
-                {/* Operator & Bus Info */}
-                <div className="flex-1">
-                    <span className="text-xs font-semibold tracking-wider uppercase text-cyan-400 bg-cyan-950/40 border border-cyan-900 px-3 py-1 rounded-full">
+                {/* Bus info */}
+                <div className="min-w-[140px]">
+                    <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mb-1.5 ${
+                        schedule.bus_type.includes('AC')
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'bg-gray-100 text-gray-600'
+                    }`}>
                         {schedule.bus_type}
                     </span>
-                    <h3 className="text-lg font-bold text-slate-100 mt-2 tracking-tight">Express Transit Corporation</h3>
-                    <p className="text-xs text-slate-500 font-mono mt-0.5">{schedule.bus_number}</p>
+                    <p className="text-sm font-semibold text-gray-900">Express Transit</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{schedule.bus_number}</p>
                 </div>
 
                 {/* Timeline */}
-                <div className="flex-1 flex items-center gap-6 w-full md:w-auto">
-                    <div className="text-left">
-                        <p className="text-xl font-bold text-slate-200">{formatTime(schedule.departure_time)}</p>
-                        <p className="text-xs text-slate-400 font-medium mt-0.5">{schedule.origin}</p>
+                <div className="flex-1 flex items-center gap-4">
+                    <div>
+                        <p className="text-lg font-bold text-gray-900">{formatTime(schedule.departure_time)}</p>
+                        <p className="text-xs text-gray-500">{schedule.origin}</p>
                     </div>
 
-                    <div className="flex-1 flex flex-col items-center min-w-[60px]">
-                        <span className="text-[10px] font-mono text-slate-500 tracking-wide">
-                            {calculateDuration(schedule.departure_time, schedule.arrival_time)}
-                        </span>
-                        <div className="w-full h-[2px] bg-slate-800 relative my-1">
-                            <span className="absolute w-1.5 h-1.5 rounded-full bg-cyan-500 -top-[2px] left-0" />
-                            <span className="absolute w-1.5 h-1.5 rounded-full bg-cyan-500 -top-[2px] right-0" />
+                    <div className="flex-1 flex flex-col items-center">
+                        <p className="text-xs text-gray-400 mb-1">{calculateDuration(schedule.departure_time, schedule.arrival_time)}</p>
+                        <div className="w-full flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                            <div className="flex-1 h-px bg-gray-300" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                         </div>
-                        <span className="text-[9px] font-medium uppercase text-slate-600 tracking-wider">Direct</span>
+                        <p className="text-xs text-gray-400 mt-1">Direct</p>
                     </div>
 
                     <div className="text-right">
-                        <p className="text-xl font-bold text-slate-200">{formatTime(schedule.arrival_time)}</p>
-                        <p className="text-xs text-slate-400 font-medium mt-0.5">{schedule.destination}</p>
+                        <p className="text-lg font-bold text-gray-900">{formatTime(schedule.arrival_time)}</p>
+                        <p className="text-xs text-gray-500">{schedule.destination}</p>
                     </div>
                 </div>
 
-                {/* Pricing */}
-                <div className="text-left md:text-right">
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Fares From</p>
-                    <p className="text-2xl font-black text-slate-100 mt-0.5">₹{lowestFare}</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Seat inventory active</p>
+                {/* Price + CTA */}
+                <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 ml-auto">
+                    <div className="text-right">
+                        <p className="text-xs text-gray-400">from</p>
+                        <p className="text-xl font-bold text-gray-900">₹{lowestFare}</p>
+                    </div>
+                    <button
+                        onClick={onSelectToggle}
+                        className={`text-sm font-semibold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            isSelected
+                                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                    >
+                        {isSelected ? 'Hide seats' : 'View seats'}
+                    </button>
                 </div>
-
-                {/* CTA */}
-                <button
-                    onClick={onSelectToggle}
-                    className={`w-full md:w-auto px-6 py-3 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
-                        isSelected
-                            ? 'bg-slate-800 text-cyan-400 border border-cyan-800/40'
-                            : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/10'
-                    }`}
-                >
-                    {isSelected ? 'Close Layout' : 'Select Seats'}
-                </button>
-
             </div>
         </div>
     );

@@ -7,19 +7,14 @@ export default function Toast({ message, type = 'error', onClose }) {
     }, [onClose]);
 
     return (
-        <div className={`fixed top-6 right-6 z-50 px-5 py-3.5 rounded-xl border shadow-2xl flex items-center gap-3 font-medium text-sm backdrop-blur-md ${
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium max-w-sm ${
             type === 'error'
-                ? 'bg-red-950/90 border-red-800 text-red-200'
-                : 'bg-emerald-950/90 border-emerald-800 text-emerald-200'
+                ? 'bg-white border-red-200 text-red-700'
+                : 'bg-white border-green-200 text-green-700'
         }`}>
-            <span>{type === 'error' ? '🚨' : '✅'}</span>
-            <p>{message}</p>
-            <button
-                onClick={onClose}
-                className="ml-4 text-xs opacity-50 hover:opacity-100 transition-opacity font-mono"
-            >
-                ✕
-            </button>
+            <span>{type === 'error' ? '⚠️' : '✓'}</span>
+            <p className="flex-1">{message}</p>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 ml-2 text-base leading-none">✕</button>
         </div>
     );
 }
