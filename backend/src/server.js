@@ -18,6 +18,20 @@ app.use("/api/buses", busRoutes);
 
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
+app.get("/debug/schema", async (req, res) => {
+  const pool = require("./config/db");
+  try {
+    const buses = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'buses' ORDER BY ordinal_position`);
+    const schedules = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'schedules' ORDER BY ordinal_position`);
+    res.json({
+      buses: buses.rows.map(r => r.column_name),
+      schedules: schedules.rows.map(r => r.column_name)
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.listen(process.env.PORT, () =>
   console.log(`Server running on port ${process.env.PORT}`)
 );
