@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useBooking } from '../context/BookingContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function PassengerForm({ onBookingSuccess }) {
     const { selectedSchedule, selectedSeats, clearBookingState } = useBooking();
+    const { token } = useAuth();
+    const resolvedToken = token || localStorage.getItem('nexus_token');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -46,7 +49,10 @@ export default function PassengerForm({ onBookingSuccess }) {
         try {
             const response = await fetch('/api/bookings/create', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${resolvedToken}`
+                },
                 body: JSON.stringify({
                     schedule_id: selectedSchedule.schedule_id,
                     total_amount: totalAmount,

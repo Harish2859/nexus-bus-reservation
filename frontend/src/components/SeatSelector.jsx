@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useBooking } from '../context/BookingContext';
+import { useAuth } from '../context/AuthContext';
 import PassengerForm from './PassengerForm';
 
 export default function SeatSelector({ scheduleId, busType, totalSeats, basePrice }) {
     const { selectedSeats, toggleSeatSelection, setSelectedSeats } = useBooking();
+    const { user } = useAuth();
     const [occupiedSeats, setOccupiedSeats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPassengerForm, setShowPassengerForm] = useState(false);
@@ -150,10 +152,16 @@ export default function SeatSelector({ scheduleId, busType, totalSeats, basePric
 
                 <button
                     disabled={selectedSeats.length === 0}
-                    onClick={() => setShowPassengerForm(true)}
+                    onClick={() => {
+                        if (!user) {
+                            alert('Please sign in to book seats.');
+                            return;
+                        }
+                        setShowPassengerForm(true);
+                    }}
                     className="w-full py-3 rounded-xl font-semibold text-sm bg-cyan-500 text-slate-950 disabled:bg-slate-900 disabled:text-slate-600 disabled:border disabled:border-slate-800 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/10 transition-all active:scale-95"
                 >
-                    Proceed to Passenger Details
+                    {!user && selectedSeats.length > 0 ? 'Sign In to Book' : 'Proceed to Passenger Details'}
                 </button>
             </div>
 
