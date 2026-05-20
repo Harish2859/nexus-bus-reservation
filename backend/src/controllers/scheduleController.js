@@ -12,7 +12,7 @@ const searchSchedules = async (req, res) => {
 
         const searchQuery = `
             SELECT 
-                s.id AS schedule_id,
+                s.schedule_id,
                 s.origin,
                 s.destination,
                 s.departure_time,
@@ -23,7 +23,7 @@ const searchSchedules = async (req, res) => {
                 b.bus_type,
                 b.total_seats
             FROM schedules s
-            JOIN buses b ON s.bus_id = b.bus_id
+            JOIN buses b ON s.bus_id = b.id
             WHERE s.origin ILIKE $1 
               AND s.destination ILIKE $2 
               AND s.departure_time::DATE = $3::DATE
