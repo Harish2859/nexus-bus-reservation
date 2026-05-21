@@ -13,8 +13,9 @@ import UserProfile from './components/UserProfile';
 const ToastContext = createContext();
 export const useToast = () => useContext(ToastContext);
 
-function Header({ onAuthClick, onProfileClick, onSearchClick }) {
+function Header({ onAuthClick, onProfileClick, onSearchClick, onLogout }) {
     const { user, logout } = useAuth();
+    const handleLogout = () => { logout(); onLogout?.(); };
     return (
         <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
             <div className="flex items-center gap-2" onClick={onSearchClick} style={{cursor:'pointer'}}>
@@ -41,7 +42,7 @@ function Header({ onAuthClick, onProfileClick, onSearchClick }) {
                                 My Bookings
                             </button>
                         )}
-                        <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                             Sign out
                         </button>
                     </>
@@ -322,14 +323,18 @@ function AppShell() {
     const { user } = useAuth();
     const [authModal, setAuthModal] = useState(null);
     const [toast, setToast] = useState(null);
-    const [passengerView, setPassengerView] = useState('search'); // 'search' | 'profile'
+    const [passengerView, setPassengerView] = useState('search');
     const showToast = (message, type = 'error') => setToast({ message, type });
+
+    const handleLogoutAndReset = () => {
+        setPassengerView('search');
+    };
 
     return (
         <ToastContext.Provider value={{ showToast }}>
             <BookingProvider>
                 <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
-                    <Header onAuthClick={(tab) => setAuthModal(tab)} onProfileClick={() => setPassengerView('profile')} onSearchClick={() => setPassengerView('search')} />
+                    <Header onAuthClick={(tab) => setAuthModal(tab)} onProfileClick={() => setPassengerView('profile')} onSearchClick={() => setPassengerView('search')} onLogout={handleLogoutAndReset} />
 
                     {user?.role === 'OPERATOR' ? (
                         <main className="max-w-4xl mx-auto px-4 py-8">
