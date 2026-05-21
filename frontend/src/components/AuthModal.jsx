@@ -18,7 +18,8 @@ export default function AuthModal({ onClose }) {
         setError('');
         setLoading(true);
 
-        const endpoint = tab === 'login' ? '/api/auth/login' : '/api/auth/register';
+        const base = import.meta.env.VITE_API_URL || '';
+        const endpoint = `${base}${tab === 'login' ? '/api/auth/login' : '/api/auth/register'}`;
         const payload = tab === 'login'
             ? { email: form.email, password: form.password }
             : { name: form.name, email: form.email, password: form.password, role: form.role };
