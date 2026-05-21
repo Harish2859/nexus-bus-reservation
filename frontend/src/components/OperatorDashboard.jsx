@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import ScheduleManifest from './ScheduleManifest';
 
 const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white";
 
@@ -58,6 +59,7 @@ export default function OperatorDashboard() {
         arrival_date: '', arrival_time_val: '',
         base_price_seater: '', base_price_sleeper: ''
     });
+    const [manifestScheduleId, setManifestScheduleId] = useState('');
 
     if (!resolvedToken) return (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">
@@ -113,6 +115,7 @@ export default function OperatorDashboard() {
         { key: 'overview', icon: '📊', label: 'Overview' },
         { key: 'add-bus', icon: '🚌', label: 'Register Bus' },
         { key: 'create-schedule', icon: '🗓️', label: 'Create Schedule' },
+        { key: 'manifest', icon: '📋', label: 'Passenger Manifest' },
     ];
 
     return (
@@ -393,6 +396,27 @@ export default function OperatorDashboard() {
                             </form>
                         </div>
                     )}
+                    {/* Manifest */}
+                    {activeTab === 'manifest' && (
+                        <div>
+                            <div className="mb-6">
+                                <h2 className="text-lg font-bold text-gray-900">Passenger Manifest</h2>
+                                <p className="text-sm text-gray-500 mt-1">View all passengers booked for a schedule. Enter a Schedule ID to load the manifest.</p>
+                            </div>
+                            <div className="flex gap-3 mb-2">
+                                <input
+                                    type="number"
+                                    placeholder="Schedule ID"
+                                    value={manifestScheduleId}
+                                    onChange={e => setManifestScheduleId(e.target.value)}
+                                    className={inputClass}
+                                    style={{ maxWidth: 200 }}
+                                />
+                            </div>
+                            {manifestScheduleId && <ScheduleManifest scheduleId={manifestScheduleId} />}
+                        </div>
+                    )}
+
                 </div>
             </div>
         </div>

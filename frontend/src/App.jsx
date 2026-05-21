@@ -8,15 +8,16 @@ import Toast from './components/Toast';
 import ErrorBoundary from './components/ErrorBoundary';
 import AuthModal from './components/AuthModal';
 import OperatorDashboard from './components/OperatorDashboard';
+import UserProfile from './components/UserProfile';
 
 const ToastContext = createContext();
 export const useToast = () => useContext(ToastContext);
 
-function Header({ onAuthClick }) {
+function Header({ onAuthClick, onProfileClick, onSearchClick }) {
     const { user, logout } = useAuth();
     return (
         <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" onClick={onSearchClick} style={{cursor:'pointer'}}>
                 <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
                     <span className="text-white text-xs font-black">N</span>
                 </div>
@@ -35,6 +36,11 @@ function Header({ onAuthClick }) {
                             {user.role === 'OPERATOR' ? 'Operator' : 'Passenger'}
                         </span>
                         <span className="text-sm text-gray-600 hidden sm:block">{user.name}</span>
+                        {user.role === 'PASSENGER' && (
+                            <button onClick={onProfileClick} className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                                My Bookings
+                            </button>
+                        )}
                         <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                             Sign out
                         </button>
@@ -316,18 +322,21 @@ function AppShell() {
     const { user } = useAuth();
     const [authModal, setAuthModal] = useState(null);
     const [toast, setToast] = useState(null);
+    const [passengerView, setPassengerView] = useState('search'); // 'search' | 'profile'
     const showToast = (message, type = 'error') => setToast({ message, type });
 
     return (
         <ToastContext.Provider value={{ showToast }}>
             <BookingProvider>
                 <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
-                    <Header onAuthClick={(tab) => setAuthModal(tab)} />
+                    <Header onAuthClick={(tab) => setAuthModal(tab)} onProfileClick={() => setPassengerView('profile')} onSearchClick={() => setPassengerView('search')} />
 
                     {user?.role === 'OPERATOR' ? (
                         <main className="max-w-4xl mx-auto px-4 py-8">
                             <OperatorDashboard />
                         </main>
+                    ) : user && passengerView === 'profile' ? (
+                        <UserProfile />
                     ) : (
                         <PassengerWorkspace onAuthClick={(tab) => setAuthModal(tab)} />
                     )}
