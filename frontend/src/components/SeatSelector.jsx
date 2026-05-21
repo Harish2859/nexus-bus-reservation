@@ -76,7 +76,7 @@ export default function SeatSelector({ scheduleId, busType, totalSeats, basePric
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">✓</div>
                 <h3 className="text-base font-bold text-green-800">Booking Confirmed!</h3>
                 <div className="text-sm text-green-700 space-y-1">
-                    <p>Ticket: <span className="font-mono font-bold">NXS-{String(successReceipt.booking_id).padStart(4, '0')}</span></p>
+                    <p>PNR: <span className="font-mono font-bold">{successReceipt.pnr_number}</span></p>
                     <p>Seats: <span className="font-semibold">{successReceipt.seats_booked.join(', ')}</span></p>
                 </div>
                 <button

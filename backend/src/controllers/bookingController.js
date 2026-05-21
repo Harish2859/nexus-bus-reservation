@@ -1,5 +1,7 @@
 const pool = require('../config/db');
 
+const generatePNR = () => 'NXS' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
 const createBooking = async (req, res) => {
     const client = await pool.connect();
 
@@ -28,11 +30,11 @@ const createBooking = async (req, res) => {
         }
 
         const bookingResult = await client.query(
-            `INSERT INTO bookings (user_id, schedule_id, total_amount, ticket_status)
-             VALUES ($1, $2, $3, 'CONFIRMED') RETURNING booking_id;`,
-            [req.user.id, schedule_id, total_amount]
+            `INSERT INTO bookings (user_id, schedule_id, total_amount, ticket_status, pnr_number)
+             VALUES ($1, $2, $3, 'CONFIRMED', $4) RETURNING booking_id, pnr_number;`,
+            [req.user.id, schedule_id, total_amount, generatePNR()]
         );
-        const bookingId = bookingResult.rows[0].booking_id;
+        const { booking_id: bookingId, pnr_number } = bookingResult.rows[0];
 
         for (const passenger of passengers) {
             await client.query(
@@ -48,6 +50,7 @@ const createBooking = async (req, res) => {
             success: true,
             message: 'Booking completed successfully!',
             booking_id: bookingId,
+            pnr_number,
             seats_booked: requestedSeats
         });
 
