@@ -215,6 +215,8 @@ function PassengerWorkspace({ onAuthClick }) {
     const [searchOrigin, setSearchOrigin] = useState('');
     const [searchDest, setSearchDest] = useState('');
 
+    const API_BASE = import.meta.env.VITE_API_URL || '';
+
     const executeSchedulesFetch = async (criteria) => {
         setLoading(true);
         setSearched(true);
@@ -223,7 +225,7 @@ function PassengerWorkspace({ onAuthClick }) {
         setSelectedSchedule(null);
         try {
             const response = await fetch(
-                `/api/schedules/search?origin=${criteria.origin}&destination=${criteria.destination}&date=${criteria.date}`
+                `${API_BASE}/api/schedules/search?origin=${criteria.origin}&destination=${criteria.destination}&date=${criteria.date}`
             );
             if (!response.ok) throw new Error(`Status: ${response.status}`);
             const data = await response.json();

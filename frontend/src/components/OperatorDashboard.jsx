@@ -47,6 +47,7 @@ function SidebarItem({ icon, label, active, onClick }) {
 export default function OperatorDashboard() {
     const { user, token } = useAuth();
     const resolvedToken = token || localStorage.getItem('nexus_token');
+    const API_BASE = import.meta.env.VITE_API_URL || '';
     const [activeTab, setActiveTab] = useState('overview');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
@@ -72,7 +73,7 @@ export default function OperatorDashboard() {
         e.preventDefault();
         setLoading(true); setResult(null);
         try {
-            const res = await fetch('/api/buses/add', {
+            const res = await fetch(`${API_BASE}/api/buses/add`, {
                 method: 'POST', headers: authHeaders,
                 body: JSON.stringify({ ...busForm, total_seats: parseInt(busForm.total_seats) })
             });
@@ -95,7 +96,7 @@ export default function OperatorDashboard() {
                 departure_time: `${scheduleForm.departure_date} ${scheduleForm.departure_time_val}:00`,
                 arrival_time: `${scheduleForm.arrival_date} ${scheduleForm.arrival_time_val}:00`
             };
-            const res = await fetch('/api/buses/schedule', {
+            const res = await fetch(`${API_BASE}/api/buses/schedule`, {
                 method: 'POST', headers: authHeaders, body: JSON.stringify(payload)
             });
             const data = await res.json();
