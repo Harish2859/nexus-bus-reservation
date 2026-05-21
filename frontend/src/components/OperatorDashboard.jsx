@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ScheduleManifest from './ScheduleManifest';
 
@@ -60,6 +60,22 @@ export default function OperatorDashboard() {
         base_price_seater: '', base_price_sleeper: ''
     });
     const [manifestScheduleId, setManifestScheduleId] = useState('');
+    const [stats, setStats] = useState(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/buses/stats`, {
+                    headers: { 'Authorization': `Bearer ${resolvedToken}` }
+                });
+                const data = await res.json();
+                if (data.success) setStats(data.stats);
+            } catch (err) {
+                console.error('Stats fetch error:', err);
+            }
+        };
+        fetchStats();
+    }, [resolvedToken, API_BASE]);
 
     if (!resolvedToken) return (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600">
@@ -82,7 +98,7 @@ export default function OperatorDashboard() {
             const data = await res.json();
             if (!res.ok) setResult({ type: 'error', message: data.error });
             else {
-                setResult({ type: 'success', message: `Bus registered successfully — ID: ${data.bus.id} · ${data.bus.bus_number}` });
+                setResult({ type: 'success', message: `Bus registered successfully — ID: ${data.bus.bus_id} · ${data.bus.bus_number}` });
                 setBusForm({ bus_number: '', bus_type: 'Seater', total_seats: '' });
             }
         } catch { setResult({ type: 'error', message: 'Network error. Please try again.' }); }
@@ -195,10 +211,10 @@ export default function OperatorDashboard() {
                     {activeTab === 'overview' && (
                         <div>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                                <StatCard icon="🚌" label="Buses Registered" value="—" sub="Add your first bus" />
-                                <StatCard icon="🗓️" label="Active Schedules" value="—" sub="Deploy a route" />
-                                <StatCard icon="🎫" label="Total Bookings" value="—" sub="Across all routes" />
-                                <StatCard icon="💰" label="Revenue" value="—" sub="This month" />
+                                <StatCard icon="🚌" label="Buses Registered" value={stats ? stats.buses : '—'} sub="Total fleet size" />
+                                <StatCard icon="🗓️" label="Active Schedules" value={stats ? stats.schedules : '—'} sub="Deployed routes" />
+                                <StatCard icon="🎫" label="Total Bookings" value={stats ? stats.bookings : '—'} sub="Confirmed tickets" />
+                                <StatCard icon="💰" label="Revenue" value={stats ? `₹${stats.revenue.toLocaleString('en-IN')}` : '—'} sub="All confirmed bookings" />
                             </div>
 
                             <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">

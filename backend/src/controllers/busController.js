@@ -80,4 +80,32 @@ const getScheduleManifest = async (req, res) => {
     }
 };
 
-module.exports = { addBus, createSchedule, getScheduleManifest };
+const getOperatorStats = async (req, res) => {
+    try {
+        const operatorId = req.user.id;
+
+        const { rows } = await pool.query(
+            `SELECT
+                (SELECT COUNT(*) FROM buses) AS buses,
+                (SELECT COUNT(*) FROM schedules) AS schedules,
+                (SELECT COUNT(*) FROM bookings WHERE ticket_status = 'CONFIRMED') AS bookings,
+                (SELECT COALESCE(SUM(total_amount), 0) FROM bookings WHERE ticket_status = 'CONFIRMED') AS revenue;`
+        );
+
+        const s = rows[0];
+        return res.status(200).json({
+            success: true,
+            stats: {
+                buses: parseInt(s.buses),
+                schedules: parseInt(s.schedules),
+                bookings: parseInt(s.bookings),
+                revenue: parseFloat(s.revenue)
+            }
+        });
+    } catch (error) {
+        console.error('Stats fetch error:', error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { addBus, createSchedule, getScheduleManifest, getOperatorStats };
