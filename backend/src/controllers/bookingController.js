@@ -28,11 +28,11 @@ const createBooking = async (req, res) => {
         }
 
         const bookingResult = await client.query(
-            `INSERT INTO bookings (schedule_id, total_amount, ticket_status)
-             VALUES ($1, $2, 'CONFIRMED') RETURNING id;`,
-            [schedule_id, total_amount]
+            `INSERT INTO bookings (user_id, schedule_id, total_amount, ticket_status)
+             VALUES ($1, $2, $3, 'CONFIRMED') RETURNING booking_id;`,
+            [req.user.id, schedule_id, total_amount]
         );
-        const bookingId = bookingResult.rows[0].id;
+        const bookingId = bookingResult.rows[0].booking_id;
 
         for (const passenger of passengers) {
             await client.query(
