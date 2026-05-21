@@ -31,8 +31,8 @@ const registerUser = async (req, res) => {
         return res.status(201).json({ success: true, token, user });
 
     } catch (error) {
-        console.error('Registration error:', error);
-        return res.status(500).json({ error: 'Internal error during registration.' });
+        console.error('Registration error:', error.message, error.stack);
+        return res.status(500).json({ error: 'Internal error during registration.', detail: error.message });
     }
 };
 
@@ -64,8 +64,8 @@ const loginUser = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
-        return res.status(500).json({ error: 'Internal error during login.' });
+        console.error('Login error:', error.message, error.stack);
+        return res.status(500).json({ error: 'Internal error during login.', detail: error.message });
     }
 };
 
