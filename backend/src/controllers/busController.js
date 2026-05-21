@@ -54,4 +54,30 @@ const createSchedule = async (req, res) => {
     }
 };
 
-module.exports = { addBus, createSchedule };
+const getScheduleManifest = async (req, res) => {
+    try {
+        const { scheduleId } = req.params;
+
+        if (isNaN(scheduleId)) {
+            return res.status(400).json({ error: 'Invalid schedule ID.' });
+        }
+
+        const { rows } = await pool.query(
+            `SELECT ps.seat_number, ps.passenger_name, ps.passenger_age, ps.passenger_gender,
+                    b.pnr_number, u.email AS booked_by_email
+             FROM passenger_seats ps
+             JOIN bookings b ON ps.booking_id = b.booking_id
+             JOIN users u ON b.user_id = u.id
+             WHERE ps.schedule_id = $1
+             ORDER BY ps.seat_number ASC;`,
+            [scheduleId]
+        );
+
+        return res.status(200).json({ success: true, manifest: rows });
+    } catch (error) {
+        console.error('Manifest fetch error:', error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { addBus, createSchedule, getScheduleManifest };

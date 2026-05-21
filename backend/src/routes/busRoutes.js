@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { addBus, createSchedule } = require('../controllers/busController');
+const { addBus, createSchedule, getScheduleManifest } = require('../controllers/busController');
 const { authenticateToken, requireOperator } = require('../middleware/authMiddleware');
 
 router.post('/add', authenticateToken, requireOperator, addBus);
 router.post('/schedule', authenticateToken, requireOperator, createSchedule);
+router.get('/manifest/:scheduleId', authenticateToken, requireOperator, getScheduleManifest);
 
 module.exports = router;
