@@ -31,10 +31,11 @@ export default function SeatSelector({ scheduleId, busType, totalSeats, basePric
     const [successReceipt, setSuccessReceipt] = useState(null);
 
     useEffect(() => {
+        const API_BASE = import.meta.env.VITE_API_URL || '';
         const fetchOccupancy = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`/api/schedules/${scheduleId}/seats`);
+                const res = await fetch(`${API_BASE}/api/schedules/${scheduleId}/seats`);
                 const data = await res.json();
                 if (data.success) setOccupiedSeats(data.booked_seats);
             } catch (e) {

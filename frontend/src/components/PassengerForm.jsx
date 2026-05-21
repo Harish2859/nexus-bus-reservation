@@ -41,8 +41,9 @@ export default function PassengerForm({ onBookingSuccess }) {
             passenger_gender: passengerData[seatId].gender
         }));
 
+        const API_BASE = import.meta.env.VITE_API_URL || '';
         try {
-            const res = await fetch('/api/bookings/create', {
+            const res = await fetch(`${API_BASE}/api/bookings/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
