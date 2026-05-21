@@ -20,7 +20,7 @@ const registerUser = async (req, res) => {
 
         const { rows } = await pool.query(
             `INSERT INTO users (name, email, password_hash, role)
-             VALUES ($1, $2, $3, $4)
+             VALUES ($1, $2, $3, $4::user_role)
              RETURNING id, name, email, role;`,
             [name.trim(), email.toLowerCase().trim(), passwordHash, assignedRole]
         );
