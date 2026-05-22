@@ -16,15 +16,22 @@ function Field({ label, hint, children }) {
     );
 }
 
-function StatCard({ icon, label, value, sub }) {
+function StatCard({ icon, label, value, sub, accent = 'blue' }) {
+    const colors = {
+        blue:   { badge: 'bg-blue-500/10 border-blue-500/20 text-blue-400',   hover: 'hover:border-blue-500/40' },
+        indigo: { badge: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400', hover: 'hover:border-indigo-500/40' },
+        amber:  { badge: 'bg-amber-500/10 border-amber-500/20 text-amber-400',  hover: 'hover:border-amber-500/40' },
+        emerald:{ badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400', hover: 'hover:border-emerald-500/40' },
+    };
+    const c = colors[accent];
     return (
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
-                <span className="text-xl">{icon}</span>
+        <div className={`group relative rounded-2xl border border-slate-800/80 bg-slate-900/30 backdrop-blur-xl p-5 shadow-xl transition-all duration-300 ${c.hover} hover:-translate-y-1`}>
+            <div className="flex justify-between items-start mb-4">
+                <div className={`rounded-xl border p-2.5 text-lg group-hover:scale-110 transition-transform duration-300 ${c.badge}`}>{icon}</div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
-            <p className="text-sm font-medium text-gray-700 mt-0.5">{label}</p>
-            {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+            <p className="text-3xl font-extrabold text-white tracking-tight">{value}</p>
+            <p className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-wider">{label}</p>
+            {sub && <p className="text-[11px] text-slate-500 mt-0.5">{sub}</p>}
         </div>
     );
 }
@@ -152,16 +159,17 @@ export default function OperatorDashboard() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Top welcome banner */}
-            <div className="bg-white border-b border-gray-200 px-6 py-5">
-                <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="relative overflow-hidden border-b border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 px-6 py-6">
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+                <div className="max-w-6xl mx-auto flex items-center justify-between relative z-10">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900">
-                            Welcome back, {user?.name?.split(' ')[0]} 👋
+                        <h1 className="text-xl font-extrabold tracking-tight text-white">
+                            Welcome back, <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{user?.name?.split(' ')[0]}</span> ✨
                         </h1>
-                        <p className="text-sm text-gray-500 mt-0.5">Manage your fleet and deploy new routes from here.</p>
+                        <p className="text-sm text-slate-400 mt-0.5">Manage your fleet and deploy new routes from here.</p>
                     </div>
-                    <span className="hidden sm:flex items-center gap-2 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <span className="hidden sm:flex items-center gap-2 text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         System online
                     </span>
                 </div>
@@ -226,10 +234,10 @@ export default function OperatorDashboard() {
                     {activeTab === 'overview' && (
                         <div>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                                <StatCard icon="🚌" label="Buses Registered" value={stats ? stats.buses : '—'} sub="Total fleet size" />
-                                <StatCard icon="🗓️" label="Active Schedules" value={stats ? stats.schedules : '—'} sub="Deployed routes" />
-                                <StatCard icon="🎫" label="Total Bookings" value={stats ? stats.bookings : '—'} sub="Confirmed tickets" />
-                                <StatCard icon="💰" label="Revenue" value={stats ? `₹${stats.revenue.toLocaleString('en-IN')}` : '—'} sub="All confirmed bookings" />
+                                <StatCard icon="🚌" label="Buses Registered" value={stats ? stats.buses : '—'} sub="Total fleet size" accent="blue" />
+                                <StatCard icon="🗓️" label="Active Schedules" value={stats ? stats.schedules : '—'} sub="Deployed routes" accent="indigo" />
+                                <StatCard icon="🎫" label="Total Bookings" value={stats ? stats.bookings : '—'} sub="Confirmed tickets" accent="amber" />
+                                <StatCard icon="💰" label="Revenue" value={stats ? `₹${stats.revenue.toLocaleString('en-IN')}` : '—'} sub="All confirmed bookings" accent="emerald" />
                             </div>
 
                             <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
