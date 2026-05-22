@@ -9,9 +9,9 @@ const addBus = async (req, res) => {
         }
 
         const { rows } = await pool.query(
-            `INSERT INTO buses (bus_number, bus_type, total_seats)
-             VALUES ($1, $2, $3) RETURNING *;`,
-            [bus_number.trim().toUpperCase(), bus_type, parseInt(total_seats)]
+            `INSERT INTO buses (bus_number, bus_type, total_seats, operator_id)
+             VALUES ($1, $2, $3, $4) RETURNING *;`,
+            [bus_number.trim().toUpperCase(), bus_type, parseInt(total_seats), req.user.id]
         );
 
         return res.status(201).json({
@@ -34,6 +34,16 @@ const createSchedule = async (req, res) => {
 
         if (!bus_id || !origin || !destination || !departure_time || !arrival_time || !base_price_seater) {
             return res.status(400).json({ error: 'Missing required schedule parameters.' });
+        }
+
+        // Verify the bus belongs to the requesting operator before scheduling
+        const ownerCheck = await pool.query(
+            `SELECT bus_id FROM buses WHERE bus_id = $1 AND operator_id = $2;`,
+            [bus_id, req.user.id]
+        );
+
+        if (ownerCheck.rows.length === 0) {
+            return res.status(403).json({ error: 'Bus not found in your fleet.' });
         }
 
         const { rows } = await pool.query(
@@ -62,11 +72,22 @@ const getScheduleManifest = async (req, res) => {
             return res.status(400).json({ error: 'Invalid schedule ID.' });
         }
 
+        // Verify the schedule belongs to a bus owned by the requesting operator
+        const ownerCheck = await pool.query(
+            `SELECT s.schedule_id FROM schedules s
+             JOIN buses b ON s.bus_id = b.bus_id
+             WHERE s.schedule_id = $1 AND b.operator_id = $2;`,
+            [scheduleId, req.user.id]
+        );
+
+        if (ownerCheck.rows.length === 0) {
+            return res.status(403).json({ error: 'Schedule not found in your fleet.' });
+        }
+
         const { rows } = await pool.query(
-            `SELECT b.ticket_status, b.pnr_number, u.email AS booked_by_email,
+            `SELECT b.ticket_status, b.pnr_number,
                     ps.seat_number, ps.passenger_name, ps.passenger_age, ps.passenger_gender
              FROM bookings b
-             JOIN users u ON b.user_id = u.id
              LEFT JOIN passenger_seats ps ON ps.booking_id = b.booking_id
              WHERE b.schedule_id = $1
              ORDER BY b.ticket_status ASC, ps.seat_number ASC;`,
@@ -86,10 +107,11 @@ const getOperatorStats = async (req, res) => {
 
         const { rows } = await pool.query(
             `SELECT
-                (SELECT COUNT(*) FROM buses) AS buses,
-                (SELECT COUNT(*) FROM schedules) AS schedules,
-                (SELECT COUNT(*) FROM bookings WHERE ticket_status = 'CONFIRMED') AS bookings,
-                (SELECT COALESCE(SUM(total_amount), 0) FROM bookings WHERE ticket_status = 'CONFIRMED') AS revenue;`
+                (SELECT COUNT(*) FROM buses WHERE operator_id = $1) AS buses,
+                (SELECT COUNT(*) FROM schedules s JOIN buses b ON s.bus_id = b.bus_id WHERE b.operator_id = $1) AS schedules,
+                (SELECT COUNT(*) FROM bookings bk JOIN schedules s ON bk.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id WHERE b.operator_id = $1 AND bk.ticket_status = 'CONFIRMED') AS bookings,
+                (SELECT COALESCE(SUM(bk.total_amount), 0) FROM bookings bk JOIN schedules s ON bk.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id WHERE b.operator_id = $1 AND bk.ticket_status = 'CONFIRMED') AS revenue;`,
+            [operatorId]
         );
 
         const s = rows[0];
@@ -111,7 +133,8 @@ const getOperatorStats = async (req, res) => {
 const getOperatorBuses = async (req, res) => {
     try {
         const { rows } = await pool.query(
-            `SELECT bus_id, bus_number, bus_type, total_seats FROM buses ORDER BY bus_id ASC;`
+            `SELECT bus_id, bus_number, bus_type, total_seats FROM buses WHERE operator_id = $1 ORDER BY bus_id ASC;`,
+            [req.user.id]
         );
         return res.status(200).json({ success: true, buses: rows });
     } catch (error) {
@@ -129,9 +152,10 @@ const getActiveSchedules = async (req, res) => {
              FROM schedules s
              JOIN buses b ON s.bus_id = b.bus_id
              LEFT JOIN passenger_seats ps ON ps.schedule_id = s.schedule_id
-             WHERE s.departure_time >= NOW()
+             WHERE s.departure_time >= NOW() AND b.operator_id = $1
              GROUP BY s.schedule_id, b.bus_number, b.bus_type, b.total_seats
-             ORDER BY s.departure_time ASC;`
+             ORDER BY s.departure_time ASC;`,
+            [req.user.id]
         );
         return res.status(200).json({ success: true, schedules: rows });
     } catch (error) {
