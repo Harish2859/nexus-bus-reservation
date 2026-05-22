@@ -63,13 +63,13 @@ const getScheduleManifest = async (req, res) => {
         }
 
         const { rows } = await pool.query(
-            `SELECT ps.seat_number, ps.passenger_name, ps.passenger_age, ps.passenger_gender,
-                    b.pnr_number, u.email AS booked_by_email
-             FROM passenger_seats ps
-             JOIN bookings b ON ps.booking_id = b.booking_id
+            `SELECT b.ticket_status, b.pnr_number, u.email AS booked_by_email,
+                    ps.seat_number, ps.passenger_name, ps.passenger_age, ps.passenger_gender
+             FROM bookings b
              JOIN users u ON b.user_id = u.id
-             WHERE ps.schedule_id = $1
-             ORDER BY ps.seat_number ASC;`,
+             LEFT JOIN passenger_seats ps ON ps.booking_id = b.booking_id
+             WHERE b.schedule_id = $1
+             ORDER BY b.ticket_status ASC, ps.seat_number ASC;`,
             [scheduleId]
         );
 

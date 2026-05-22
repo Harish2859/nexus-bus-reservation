@@ -81,10 +81,9 @@ const cancelBooking = async (req, res) => {
 
         await client.query('BEGIN');
         await client.query(`UPDATE bookings SET ticket_status = 'CANCELLED' WHERE booking_id = $1`, [bookingId]);
-        await client.query(`DELETE FROM passenger_seats WHERE booking_id = $1`, [bookingId]);
         await client.query('COMMIT');
 
-        return res.status(200).json({ success: true, message: 'Ticket cancelled. Seats released.' });
+        return res.status(200).json({ success: true, message: 'Ticket cancelled.' });
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Cancellation error:', error);

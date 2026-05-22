@@ -13,11 +13,11 @@ const getUserDashboard = async (req, res) => {
             `SELECT b.booking_id, b.pnr_number, b.total_amount, b.ticket_status, b.booking_date,
                     s.origin, s.destination, s.departure_time, s.arrival_time,
                     bu.bus_number, bu.bus_type,
-                    ARRAY_AGG(ps.seat_number ORDER BY ps.seat_number) AS seats
+                    ARRAY_REMOVE(ARRAY_AGG(ps.seat_number ORDER BY ps.seat_number), NULL) AS seats
              FROM bookings b
              JOIN schedules s ON b.schedule_id = s.schedule_id
              JOIN buses bu ON s.bus_id = bu.bus_id
-             JOIN passenger_seats ps ON ps.booking_id = b.booking_id
+             LEFT JOIN passenger_seats ps ON ps.booking_id = b.booking_id
              WHERE b.user_id = $1
              GROUP BY b.booking_id, b.pnr_number, b.total_amount, b.ticket_status, b.booking_date,
                       s.origin, s.destination, s.departure_time, s.arrival_time,

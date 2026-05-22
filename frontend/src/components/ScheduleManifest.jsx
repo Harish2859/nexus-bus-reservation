@@ -28,14 +28,15 @@ export default function ScheduleManifest({ scheduleId, onClose }) {
 
     const exportCSV = () => {
         if (manifest.length === 0) return;
-        const headers = ['Seat', 'Passenger Name', 'Age', 'Gender', 'PNR', 'Booked By'];
+        const headers = ['Seat', 'Passenger Name', 'Age', 'Gender', 'PNR', 'Booked By', 'Status'];
         const rows = manifest.map(p => [
-            p.seat_number,
-            `"${p.passenger_name.replace(/"/g, '""')}"`,
-            p.passenger_age,
-            p.passenger_gender,
+            p.seat_number || '—',
+            `"${(p.passenger_name || '—').replace(/"/g, '""')}"`,
+            p.passenger_age || '—',
+            p.passenger_gender || '—',
             p.pnr_number,
-            p.booked_by_email
+            p.booked_by_email,
+            p.ticket_status
         ]);
         const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -82,22 +83,48 @@ export default function ScheduleManifest({ scheduleId, onClose }) {
                                 <th className="px-4 py-3">Age / Gender</th>
                                 <th className="px-4 py-3">PNR</th>
                                 <th className="px-4 py-3">Booked By</th>
+                                <th className="px-4 py-3">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {manifest.map((p, i) => (
-                                <tr key={i} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-4 py-3 font-bold text-gray-800">{p.seat_number.replace('S', '')}</td>
-                                    <td className="px-4 py-3 font-medium text-gray-900">{p.passenger_name}</td>
-                                    <td className="px-4 py-3 text-gray-600">{p.passenger_age} yrs · {p.passenger_gender}</td>
-                                    <td className="px-4 py-3 font-mono font-bold text-blue-600">{p.pnr_number}</td>
-                                    <td className="px-4 py-3 text-gray-500">{p.booked_by_email}</td>
-                                </tr>
-                            ))}
+                            {manifest.map((p, i) => {
+                                const isCancelled = p.ticket_status === 'CANCELLED';
+                                return (
+                                    <tr key={i} className={`transition-colors ${ isCancelled ? 'bg-red-50/60' : 'hover:bg-gray-50' }`}>
+                                        <td className={`px-4 py-3 font-bold ${ isCancelled ? 'text-red-300 line-through' : 'text-gray-800' }`}>
+                                            {p.seat_number ? p.seat_number.replace('S', '') : '—'}
+                                        </td>
+                                        <td className={`px-4 py-3 font-medium ${ isCancelled ? 'text-red-400 line-through' : 'text-gray-900' }`}>
+                                            {p.passenger_name || '—'}
+                                        </td>
+                                        <td className={`px-4 py-3 ${ isCancelled ? 'text-red-300' : 'text-gray-600' }`}>
+                                            {p.passenger_age ? `${p.passenger_age} yrs · ${p.passenger_gender}` : '—'}
+                                        </td>
+                                        <td className={`px-4 py-3 font-mono font-bold ${ isCancelled ? 'text-red-400' : 'text-blue-600' }`}>
+                                            {p.pnr_number}
+                                        </td>
+                                        <td className={`px-4 py-3 ${ isCancelled ? 'text-red-300' : 'text-gray-500' }`}>
+                                            {p.booked_by_email}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
+                                                isCancelled
+                                                    ? 'bg-red-50 text-red-600 border-red-200'
+                                                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                            }`}>
+                                                {isCancelled ? '✕ Cancelled' : '✓ Confirmed'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                     <p className="text-xs text-gray-400 px-4 py-3 border-t border-gray-100">
-                        {manifest.length} passenger{manifest.length !== 1 ? 's' : ''} on board
+                        {manifest.filter(p => p.ticket_status !== 'CANCELLED').length} confirmed
+                        {manifest.some(p => p.ticket_status === 'CANCELLED') &&
+                            ` · ${manifest.filter(p => p.ticket_status === 'CANCELLED').length} cancelled`
+                        } &nbsp;&mdash;&nbsp; {manifest.length} total record{manifest.length !== 1 ? 's' : ''}
                     </p>
                 </div>
             )}
