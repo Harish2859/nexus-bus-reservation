@@ -28,7 +28,7 @@ function SideNavItem({ icon, label, active, onClick }) {
 }
 
 /* ── ticket card ──────────────────────────────────────────────────────────── */
-function BookingTicket({ b }) {
+function BookingTicket({ b, onCancel }) {
     const isConfirmed = b.ticket_status === 'CONFIRMED';
     const depDate = new Date(b.departure_time);
 
@@ -50,13 +50,23 @@ function BookingTicket({ b }) {
                         </div>
                         <p className="text-xs text-slate-500 mt-0.5">{b.bus_number} · {b.bus_type}</p>
                     </div>
-                    <span className={`shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-full border ${
-                        isConfirmed
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-red-50 text-red-700 border-red-200'
-                    }`}>
-                        {isConfirmed ? '✓ Confirmed' : '✕ Cancelled'}
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-xs font-bold px-2.5 py-1.5 rounded-full border ${
+                            isConfirmed
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-red-50 text-red-700 border-red-200'
+                        }`}>
+                            {isConfirmed ? '✓ Confirmed' : '✕ Cancelled'}
+                        </span>
+                        {isConfirmed && (
+                            <button
+                                onClick={() => onCancel(b.booking_id)}
+                                className="text-[11px] font-bold text-red-500 bg-red-50 hover:bg-red-500 hover:text-white border border-red-200 px-2.5 py-1.5 rounded-full transition-all duration-150"
+                            >
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Divider with notch effect */}
@@ -121,6 +131,27 @@ export default function UserProfile({ onNavigateHome }) {
         };
         fetchDashboard();
     }, [token, API_BASE]);
+
+    const handleCancelTicket = async (bookingId) => {
+        if (!window.confirm('Cancel this booking? Your seats will be released immediately.')) return;
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/cancel-booking`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ bookingId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setBookings(prev => prev.map(b =>
+                    b.booking_id === bookingId ? { ...b, ticket_status: 'CANCELLED' } : b
+                ));
+            } else {
+                alert(data.message || 'Unable to cancel ticket.');
+            }
+        } catch (err) {
+            console.error('Cancel error:', err);
+        }
+    };
 
     const confirmed  = bookings.filter(b => b.ticket_status === 'CONFIRMED');
     const cancelled  = bookings.filter(b => b.ticket_status !== 'CONFIRMED');
@@ -284,7 +315,7 @@ export default function UserProfile({ onNavigateHome }) {
                         ) : (
                             <div className="space-y-4">
                                 {visibleBookings.map(b => (
-                                    <BookingTicket key={b.booking_id} b={b} />
+                                    <BookingTicket key={b.booking_id} b={b} onCancel={handleCancelTicket} />
                                 ))}
                             </div>
                         )}

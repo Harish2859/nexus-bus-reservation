@@ -63,4 +63,35 @@ const createBooking = async (req, res) => {
     }
 };
 
-module.exports = { createBooking };
+const cancelBooking = async (req, res) => {
+    const { bookingId } = req.body;
+    const client = await pool.connect();
+
+    try {
+        const verify = await client.query(
+            `SELECT ticket_status FROM bookings WHERE booking_id = $1 AND user_id = $2`,
+            [bookingId, req.user.id]
+        );
+
+        if (verify.rows.length === 0)
+            return res.status(404).json({ success: false, message: 'Booking not found.' });
+
+        if (verify.rows[0].ticket_status === 'CANCELLED')
+            return res.status(400).json({ success: false, message: 'Ticket already cancelled.' });
+
+        await client.query('BEGIN');
+        await client.query(`UPDATE bookings SET ticket_status = 'CANCELLED' WHERE booking_id = $1`, [bookingId]);
+        await client.query(`DELETE FROM passenger_seats WHERE booking_id = $1`, [bookingId]);
+        await client.query('COMMIT');
+
+        return res.status(200).json({ success: true, message: 'Ticket cancelled. Seats released.' });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Cancellation error:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    } finally {
+        client.release();
+    }
+};
+
+module.exports = { createBooking, cancelBooking };
