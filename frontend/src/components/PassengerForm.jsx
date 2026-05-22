@@ -28,7 +28,7 @@ export default function PassengerForm({ onBookingSuccess }) {
         for (const seatId of selectedSeats) {
             const p = passengerData[seatId];
             if (!p.name.trim() || !p.age) {
-                setErrorMessage(`Please fill in all details for seat ${seatId.replace('S', '')} .`);
+                setErrorMessage(`Please fill in all details for seat ${seatId.replace('S', '')}.`);
                 setIsSubmitting(false);
                 return;
             }
@@ -69,32 +69,33 @@ export default function PassengerForm({ onBookingSuccess }) {
         }
     };
 
-    const inputClass = "w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition";
+    const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 focus:bg-white transition-all";
 
     return (
         <form onSubmit={handleSubmit} className="max-w-xl">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">Passenger details</h3>
+            <div className="flex items-center gap-2 mb-5">
+                <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center text-base">👤</div>
+                <h3 className="text-base font-extrabold text-slate-900">Passenger details</h3>
+            </div>
 
             <div className="space-y-3 mb-5">
                 {selectedSeats.map((seatId) => (
-                    <div key={seatId} className="bg-white border border-gray-200 rounded-xl p-4">
+                    <div key={seatId} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
                         <div className="flex items-center gap-2 mb-3">
-                            <span className="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-lg flex items-center justify-center">
+                            <span className="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-black rounded-lg flex items-center justify-center shadow-sm">
                                 {seatId.replace('S', '')}
                             </span>
-                            <span className="text-sm font-medium text-gray-700">Seat {seatId.replace('S', '')}</span>
+                            <span className="text-sm font-semibold text-slate-700">Seat {seatId.replace('S', '')}</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2">
-                            <div className="col-span-1">
-                                <input
-                                    type="text"
-                                    placeholder="Full name"
-                                    required
-                                    value={passengerData[seatId].name}
-                                    onChange={(e) => handleInputChange(seatId, 'name', e.target.value)}
-                                    className={`${inputClass} col-span-1`}
-                                />
-                            </div>
+                            <input
+                                type="text"
+                                placeholder="Full name"
+                                required
+                                value={passengerData[seatId].name}
+                                onChange={(e) => handleInputChange(seatId, 'name', e.target.value)}
+                                className={inputClass}
+                            />
                             <input
                                 type="number"
                                 placeholder="Age"
@@ -119,17 +120,20 @@ export default function PassengerForm({ onBookingSuccess }) {
             </div>
 
             {errorMessage && (
-                <p className="text-sm text-red-500 mb-4">{errorMessage}</p>
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5 mb-4">
+                    <span>⚠️</span>
+                    {errorMessage}
+                </div>
             )}
 
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 transition-all shadow-md shadow-blue-200 disabled:shadow-none flex items-center justify-center gap-2"
             >
                 {isSubmitting ? (
                     <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Processing...</>
-                ) : 'Confirm booking'}
+                ) : 'Confirm booking →'}
             </button>
         </form>
     );

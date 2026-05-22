@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ScheduleManifest from './ScheduleManifest';
 
-const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white";
+const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 focus:bg-white transition-all";
 
 function Field({ label, hint, children }) {
     return (
@@ -18,20 +18,18 @@ function Field({ label, hint, children }) {
 
 function StatCard({ icon, label, value, sub, accent = 'blue' }) {
     const colors = {
-        blue:   { badge: 'bg-blue-500/10 border-blue-500/20 text-blue-400',   hover: 'hover:border-blue-500/40' },
-        indigo: { badge: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400', hover: 'hover:border-indigo-500/40' },
-        amber:  { badge: 'bg-amber-500/10 border-amber-500/20 text-amber-400',  hover: 'hover:border-amber-500/40' },
-        emerald:{ badge: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400', hover: 'hover:border-emerald-500/40' },
+        blue:   { bg: 'from-blue-500 to-blue-600', light: 'bg-blue-50 text-blue-700 border-blue-200', shadow: 'shadow-blue-100' },
+        indigo: { bg: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50 text-indigo-700 border-indigo-200', shadow: 'shadow-indigo-100' },
+        amber:  { bg: 'from-amber-500 to-orange-500', light: 'bg-amber-50 text-amber-700 border-amber-200', shadow: 'shadow-amber-100' },
+        emerald:{ bg: 'from-emerald-500 to-teal-500', light: 'bg-emerald-50 text-emerald-700 border-emerald-200', shadow: 'shadow-emerald-100' },
     };
     const c = colors[accent];
     return (
-        <div className={`group relative rounded-2xl border border-slate-800/80 bg-slate-900/30 backdrop-blur-xl p-5 shadow-xl transition-all duration-300 ${c.hover} hover:-translate-y-1`}>
-            <div className="flex justify-between items-start mb-4">
-                <div className={`rounded-xl border p-2.5 text-lg group-hover:scale-110 transition-transform duration-300 ${c.badge}`}>{icon}</div>
-            </div>
-            <p className="text-3xl font-extrabold text-white tracking-tight">{value}</p>
-            <p className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-wider">{label}</p>
-            {sub && <p className="text-[11px] text-slate-500 mt-0.5">{sub}</p>}
+        <div className={`group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${c.shadow}`}>
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${c.bg} flex items-center justify-center text-lg mb-4 shadow-sm group-hover:scale-110 transition-transform`}>{icon}</div>
+            <p className="text-2xl font-black text-slate-900 tracking-tight">{value}</p>
+            <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-wider">{label}</p>
+            {sub && <p className="text-[11px] text-slate-400 mt-0.5">{sub}</p>}
         </div>
     );
 }
@@ -40,10 +38,10 @@ function SidebarItem({ icon, label, active, onClick }) {
     return (
         <button
             onClick={onClick}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left ${
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
                 active
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent'
             }`}
         >
             <span className="text-base">{icon}</span>
@@ -157,9 +155,9 @@ export default function OperatorDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-slate-50">
             {/* Top welcome banner */}
-            <div className="relative overflow-hidden border-b border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 px-6 py-6">
+            <div className="relative overflow-hidden border-b border-slate-200 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-6">
                 <div className="absolute top-0 right-0 -mr-16 -mt-16 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
                 <div className="max-w-6xl mx-auto flex items-center justify-between relative z-10">
                     <div>
@@ -168,7 +166,7 @@ export default function OperatorDashboard() {
                         </h1>
                         <p className="text-sm text-slate-400 mt-0.5">Manage your fleet and deploy new routes from here.</p>
                     </div>
-                    <span className="hidden sm:flex items-center gap-2 text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
+                    <span className="hidden sm:flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         System online
                     </span>
@@ -178,7 +176,7 @@ export default function OperatorDashboard() {
             <div className="max-w-6xl mx-auto px-4 py-8 flex gap-6">
 
                 {/* Sidebar */}
-                <aside className="hidden md:flex flex-col w-52 shrink-0 gap-1">
+                <aside className="hidden md:flex flex-col w-52 shrink-0 gap-1.5">
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Menu</p>
                     {navItems.map(item => (
                         <SidebarItem
@@ -190,7 +188,7 @@ export default function OperatorDashboard() {
                         />
                     ))}
 
-                    <div className="mt-6 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                    <div className="mt-6 p-3.5 bg-blue-50 border border-blue-200 rounded-2xl">
                         <p className="text-xs font-semibold text-blue-800 mb-1">Need help?</p>
                         <p className="text-xs text-blue-600 leading-relaxed">
                             Register your bus first, then use its ID to create a schedule.
@@ -219,9 +217,9 @@ export default function OperatorDashboard() {
 
                     {/* Result banner */}
                     {result && (
-                        <div className={`flex items-start gap-3 p-4 rounded-xl border text-sm mb-6 ${
+                        <div className={`flex items-start gap-3 p-4 rounded-2xl border text-sm mb-6 ${
                             result.type === 'success'
-                                ? 'bg-green-50 border-green-200 text-green-800'
+                                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                                 : 'bg-red-50 border-red-200 text-red-700'
                         }`}>
                             <span>{result.type === 'success' ? '✅' : '⚠️'}</span>
@@ -232,7 +230,7 @@ export default function OperatorDashboard() {
 
                     {/* Overview */}
                     {activeTab === 'overview' && (
-                        <div>
+                        <div className="animate-fade-up">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                                 <StatCard icon="🚌" label="Buses Registered" value={stats ? stats.buses : '—'} sub="Total fleet size" accent="blue" />
                                 <StatCard icon="🗓️" label="Active Schedules" value={stats ? stats.schedules : '—'} sub="Deployed routes" accent="indigo" />
@@ -240,40 +238,42 @@ export default function OperatorDashboard() {
                                 <StatCard icon="💰" label="Revenue" value={stats ? `₹${stats.revenue.toLocaleString('en-IN')}` : '—'} sub="All confirmed bookings" accent="emerald" />
                             </div>
 
-                            <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-                                <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick actions</h3>
+                            <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6">
+                                <h3 className="text-sm font-bold text-slate-900 mb-4">Quick actions</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <button
                                         onClick={() => setActiveTab('add-bus')}
-                                        className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all text-left group"
+                                        className="flex items-center gap-4 p-4 border border-slate-200 rounded-2xl hover:border-blue-300 hover:bg-blue-50 hover:shadow-sm transition-all text-left group"
                                     >
-                                        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl group-hover:bg-blue-200 transition-colors">🚌</div>
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">🚌</div>
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-900">Register a bus</p>
-                                            <p className="text-xs text-gray-500 mt-0.5">Add a new vehicle to your fleet</p>
+                                            <p className="text-sm font-bold text-slate-900">Register a bus</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">Add a new vehicle to your fleet</p>
                                         </div>
                                     </button>
                                     <button
                                         onClick={() => setActiveTab('create-schedule')}
-                                        className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all text-left group"
+                                        className="flex items-center gap-4 p-4 border border-slate-200 rounded-2xl hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-sm transition-all text-left group"
                                     >
-                                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl group-hover:bg-green-200 transition-colors">🗓️</div>
+                                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center text-xl shadow-sm group-hover:scale-110 transition-transform">🗓️</div>
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-900">Create a schedule</p>
-                                            <p className="text-xs text-gray-500 mt-0.5">Deploy a new route for passengers</p>
+                                            <p className="text-sm font-bold text-slate-900">Create a schedule</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">Deploy a new route for passengers</p>
                                         </div>
                                     </button>
                                 </div>
                             </div>
 
                             {/* Live Dispatch Table */}
-                            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mt-6">
-                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden mt-6 shadow-sm">
+                                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                                     <div>
-                                        <h3 className="text-sm font-semibold text-gray-900">Active Schedules & Passenger Load</h3>
-                                        <p className="text-xs text-gray-400 mt-0.5">Upcoming routes with real-time seat capacity.</p>
+                                        <h3 className="text-sm font-bold text-slate-900">Active Schedules & Passenger Load</h3>
+                                        <p className="text-xs text-slate-400 mt-0.5">Upcoming routes with real-time seat capacity.</p>
                                     </div>
-                                    <span className="bg-blue-50 text-blue-700 font-semibold px-2.5 py-1 rounded-full text-xs border border-blue-100">Live</span>
+                                    <span className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-xs border border-emerald-200">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                    </span>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
@@ -324,8 +324,8 @@ export default function OperatorDashboard() {
                                 </div>
                             </div>
 
-                            <div className="bg-white border border-gray-200 rounded-xl p-6 mt-6">
-                                <h3 className="text-sm font-semibold text-gray-900 mb-1">Getting started</h3>
+                            <div className="bg-white border border-slate-200 rounded-2xl p-6 mt-6 shadow-sm">
+                                <h3 className="text-sm font-bold text-slate-900 mb-1">Getting started</h3>
                                 <p className="text-xs text-gray-500 mb-4">Follow these steps to get your first booking.</p>
                                 <div className="space-y-3">
                                     {[
@@ -358,13 +358,13 @@ export default function OperatorDashboard() {
 
                     {/* Register Bus */}
                     {activeTab === 'add-bus' && (
-                        <div>
+                        <div className="animate-fade-up">
                             <div className="mb-6">
-                                <h2 className="text-lg font-bold text-gray-900">Register a bus</h2>
-                                <p className="text-sm text-gray-500 mt-1">Add a new vehicle to your fleet. You'll get a Bus ID to use when creating schedules.</p>
+                                <h2 className="text-lg font-extrabold text-slate-900">Register a bus</h2>
+                                <p className="text-sm text-slate-500 mt-1">Add a new vehicle to your fleet. You'll get a Bus ID to use when creating schedules.</p>
                             </div>
 
-                            <form onSubmit={submitBus} className="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100">
+                            <form onSubmit={submitBus} className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 shadow-sm">
                                 <div className="p-6 space-y-5">
                                     <h3 className="text-sm font-semibold text-gray-900">Vehicle information</h3>
 
@@ -390,10 +390,10 @@ export default function OperatorDashboard() {
                                     </div>
                                 </div>
 
-                                <div className="px-6 py-4 bg-gray-50 rounded-b-xl flex items-center justify-between">
-                                    <p className="text-xs text-gray-400">Bus ID will be shown after registration</p>
+                                <div className="px-6 py-4 bg-slate-50 rounded-b-2xl flex items-center justify-between">
+                                    <p className="text-xs text-slate-400">Bus ID will be shown after registration</p>
                                     <button type="submit" disabled={loading}
-                                        className="px-5 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 transition-colors flex items-center gap-2">
+                                        className="px-5 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 transition-all shadow-sm flex items-center gap-2">
                                         {loading ? <><span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />Saving...</> : 'Register bus'}
                                     </button>
                                 </div>
@@ -403,13 +403,13 @@ export default function OperatorDashboard() {
 
                     {/* Create Schedule */}
                     {activeTab === 'create-schedule' && (
-                        <div>
+                        <div className="animate-fade-up">
                             <div className="mb-6">
-                                <h2 className="text-lg font-bold text-gray-900">Create a schedule</h2>
-                                <p className="text-sm text-gray-500 mt-1">Deploy a new route. Passengers will see it immediately in search results.</p>
+                                <h2 className="text-lg font-extrabold text-slate-900">Create a schedule</h2>
+                                <p className="text-sm text-slate-500 mt-1">Deploy a new route. Passengers will see it immediately in search results.</p>
                             </div>
 
-                            <form onSubmit={submitSchedule} className="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100">
+                            <form onSubmit={submitSchedule} className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 shadow-sm">
 
                                 {/* Bus selection */}
                                 <div className="p-6 space-y-4">
@@ -489,10 +489,10 @@ export default function OperatorDashboard() {
                                     </div>
                                 </div>
 
-                                <div className="px-6 py-4 bg-gray-50 rounded-b-xl flex items-center justify-between">
-                                    <p className="text-xs text-gray-400">Schedule goes live immediately after creation</p>
+                                <div className="px-6 py-4 bg-slate-50 rounded-b-2xl flex items-center justify-between">
+                                    <p className="text-xs text-slate-400">Schedule goes live immediately after creation</p>
                                     <button type="submit" disabled={loading}
-                                        className="px-5 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 transition-colors flex items-center gap-2">
+                                        className="px-5 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 transition-all shadow-sm flex items-center gap-2">
                                         {loading ? <><span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />Saving...</> : 'Deploy schedule'}
                                     </button>
                                 </div>
@@ -501,10 +501,10 @@ export default function OperatorDashboard() {
                     )}
                     {/* Manifest */}
                     {activeTab === 'manifest' && (
-                        <div>
+                        <div className="animate-fade-up">
                             <div className="mb-6">
-                                <h2 className="text-lg font-bold text-gray-900">Passenger Manifest</h2>
-                                <p className="text-sm text-gray-500 mt-1">View all passengers booked for a schedule. Enter a Schedule ID to load the manifest.</p>
+                                <h2 className="text-lg font-extrabold text-slate-900">Passenger Manifest</h2>
+                                <p className="text-sm text-slate-500 mt-1">View all passengers booked for a schedule. Enter a Schedule ID to load the manifest.</p>
                             </div>
                             <div className="flex gap-3 mb-2">
                                 <input
