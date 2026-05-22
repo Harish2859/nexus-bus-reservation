@@ -38,10 +38,10 @@ function SidebarItem({ icon, label, active, onClick }) {
     return (
         <button
             onClick={onClick}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all text-left ${
                 active
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
         >
             <span className="text-base">{icon}</span>
@@ -156,64 +156,121 @@ export default function OperatorDashboard() {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            {/* Top welcome banner */}
-            <div className="relative overflow-hidden border-b border-slate-200 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-6">
-                <div className="absolute top-0 right-0 -mr-16 -mt-16 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-                <div className="max-w-6xl mx-auto flex items-center justify-between relative z-10">
+            {/* Page header band — matches UserProfile */}
+            <div className="w-full bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 h-36 relative overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
+                    <div className="absolute bottom-0 left-1/3 w-48 h-48 rounded-full bg-indigo-400/20 blur-2xl" />
+                </div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-end pb-4 relative z-10 justify-between">
                     <div>
-                        <h1 className="text-xl font-extrabold tracking-tight text-white">
-                            Welcome back, <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">{user?.name?.split(' ')[0]}</span> ✨
+                        <p className="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">Operator Portal</p>
+                        <h1 className="text-2xl font-black text-white tracking-tight">
+                            Welcome back, {user?.name?.split(' ')[0]} ✨
                         </h1>
-                        <p className="text-sm text-slate-400 mt-0.5">Manage your fleet and deploy new routes from here.</p>
                     </div>
-                    <span className="hidden sm:flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        System online
-                    </span>
+                    <div className="hidden sm:flex flex-col items-end gap-1.5 pb-0.5">
+                        <span className="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            System online
+                        </span>
+                        <span className="text-xs text-blue-300 font-medium">
+                            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-4 py-8 flex gap-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+            <div className="flex flex-col lg:flex-row gap-6 items-start">
 
                 {/* Sidebar */}
-                <aside className="hidden md:flex flex-col w-52 shrink-0 gap-1.5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Menu</p>
-                    {navItems.map(item => (
-                        <SidebarItem
-                            key={item.key}
-                            icon={item.icon}
-                            label={item.label}
-                            active={activeTab === item.key}
-                            onClick={() => { setActiveTab(item.key); setResult(null); }}
-                        />
-                    ))}
+                <aside className="w-full lg:w-72 shrink-0 space-y-4">
 
-                    <div className="mt-6 p-3.5 bg-blue-50 border border-blue-200 rounded-2xl">
-                        <p className="text-xs font-semibold text-blue-800 mb-1">Need help?</p>
+                    {/* Operator card */}
+                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="h-16 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
+                            <div className="absolute -bottom-8 left-5">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-xl font-black border-4 border-white shadow-lg">
+                                    🚌
+                                </div>
+                            </div>
+                        </div>
+                        <div className="pt-10 px-5 pb-5">
+                            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">{user?.name}</h2>
+                            <p className="text-xs text-slate-500 mt-0.5 break-all">{user?.email}</p>
+                            <span className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full">
+                                🏢 Operator
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Stats pills */}
+                    <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Fleet Overview</p>
+                        <div className="flex gap-2 mb-2">
+                            <div className="flex-1 rounded-2xl p-3 text-center bg-slate-50 border border-slate-100">
+                                <p className="text-xl font-black text-slate-900">{stats ? stats.buses : '—'}</p>
+                                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Buses</p>
+                            </div>
+                            <div className="flex-1 rounded-2xl p-3 text-center bg-blue-50 border border-blue-100">
+                                <p className="text-xl font-black text-slate-900">{stats ? stats.schedules : '—'}</p>
+                                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Routes</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="flex-1 rounded-2xl p-3 text-center bg-amber-50 border border-amber-100">
+                                <p className="text-xl font-black text-slate-900">{stats ? stats.bookings : '—'}</p>
+                                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Bookings</p>
+                            </div>
+                            <div className="flex-1 rounded-2xl p-3 text-center bg-emerald-50 border border-emerald-100">
+                                <p className="text-xl font-black text-slate-900">{stats ? `₹${Number(stats.revenue).toLocaleString('en-IN')}` : '—'}</p>
+                                <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Nav */}
+                    <div className="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm space-y-1">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 mb-2">Navigation</p>
+                        {navItems.map(item => (
+                            <SidebarItem
+                                key={item.key}
+                                icon={item.icon}
+                                label={item.label}
+                                active={activeTab === item.key}
+                                onClick={() => { setActiveTab(item.key); setResult(null); }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Help tip */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 shadow-sm">
+                        <p className="text-xs font-semibold text-blue-800 mb-1">💡 Quick tip</p>
                         <p className="text-xs text-blue-600 leading-relaxed">
                             Register your bus first, then use its ID to create a schedule.
                         </p>
                     </div>
                 </aside>
 
-                {/* Mobile tabs */}
-                <div className="md:hidden w-full mb-4">
-                    <div className="flex bg-gray-100 rounded-lg p-1">
-                        {navItems.map(t => (
-                            <button key={t.key}
-                                onClick={() => { setActiveTab(t.key); setResult(null); }}
-                                className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-all ${
-                                    activeTab === t.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
-                                }`}
-                            >
-                                {t.icon}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Main content */}
                 <div className="flex-1 min-w-0">
+
+                    {/* Mobile tabs */}
+                    <div className="lg:hidden mb-4">
+                        <div className="flex bg-white border border-slate-200 rounded-xl p-1 gap-1 shadow-sm">
+                            {navItems.map(t => (
+                                <button key={t.key}
+                                    onClick={() => { setActiveTab(t.key); setResult(null); }}
+                                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                                        activeTab === t.key ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                                    }`}
+                                >
+                                    {t.icon}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
                     {/* Result banner */}
                     {result && (
@@ -521,6 +578,7 @@ export default function OperatorDashboard() {
                     )}
 
                 </div>
+            </div>
             </div>
         </div>
     );
