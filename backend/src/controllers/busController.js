@@ -108,4 +108,36 @@ const getOperatorStats = async (req, res) => {
     }
 };
 
-module.exports = { addBus, createSchedule, getScheduleManifest, getOperatorStats };
+const getOperatorBuses = async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT bus_id, bus_number, bus_type, total_seats FROM buses ORDER BY bus_id ASC;`
+        );
+        return res.status(200).json({ success: true, buses: rows });
+    } catch (error) {
+        console.error('Fleet fetch error:', error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+const getActiveSchedules = async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT s.schedule_id, s.origin, s.destination, s.departure_time,
+                    b.bus_number, b.bus_type, b.total_seats,
+                    COUNT(ps.seat_number) AS booked_seats
+             FROM schedules s
+             JOIN buses b ON s.bus_id = b.bus_id
+             LEFT JOIN passenger_seats ps ON ps.schedule_id = s.schedule_id
+             WHERE s.departure_time >= NOW()
+             GROUP BY s.schedule_id, b.bus_number, b.bus_type, b.total_seats
+             ORDER BY s.departure_time ASC;`
+        );
+        return res.status(200).json({ success: true, schedules: rows });
+    } catch (error) {
+        console.error('Active schedules fetch error:', error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { addBus, createSchedule, getScheduleManifest, getOperatorStats, getOperatorBuses, getActiveSchedules };

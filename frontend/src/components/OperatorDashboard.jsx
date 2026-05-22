@@ -61,20 +61,35 @@ export default function OperatorDashboard() {
     });
     const [manifestScheduleId, setManifestScheduleId] = useState('');
     const [stats, setStats] = useState(null);
+    const [myBuses, setMyBuses] = useState([]);
+    const [activeSchedules, setActiveSchedules] = useState([]);
 
     useEffect(() => {
+        const authHeaders = { 'Authorization': `Bearer ${resolvedToken}` };
         const fetchStats = async () => {
             try {
-                const res = await fetch(`${API_BASE}/api/buses/stats`, {
-                    headers: { 'Authorization': `Bearer ${resolvedToken}` }
-                });
+                const res = await fetch(`${API_BASE}/api/buses/stats`, { headers: authHeaders });
                 const data = await res.json();
                 if (data.success) setStats(data.stats);
-            } catch (err) {
-                console.error('Stats fetch error:', err);
-            }
+            } catch (err) { console.error('Stats fetch error:', err); }
+        };
+        const fetchFleet = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/buses/fleet`, { headers: authHeaders });
+                const data = await res.json();
+                if (data.success) setMyBuses(data.buses || []);
+            } catch (err) { console.error('Fleet fetch error:', err); }
+        };
+        const fetchActiveSchedules = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/buses/active-schedules`, { headers: authHeaders });
+                const data = await res.json();
+                if (data.success) setActiveSchedules(data.schedules || []);
+            } catch (err) { console.error('Active schedules fetch error:', err); }
         };
         fetchStats();
+        fetchFleet();
+        fetchActiveSchedules();
     }, [resolvedToken, API_BASE]);
 
     if (!resolvedToken) return (
@@ -243,7 +258,65 @@ export default function OperatorDashboard() {
                                 </div>
                             </div>
 
-                            <div className="bg-white border border-gray-200 rounded-xl p-6">
+                            {/* Live Dispatch Table */}
+                            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mt-6">
+                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-gray-900">Active Schedules & Passenger Load</h3>
+                                        <p className="text-xs text-gray-400 mt-0.5">Upcoming routes with real-time seat capacity.</p>
+                                    </div>
+                                    <span className="bg-blue-50 text-blue-700 font-semibold px-2.5 py-1 rounded-full text-xs border border-blue-100">Live</span>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="bg-gray-50 border-b border-gray-100 text-gray-400 font-semibold text-[10px] uppercase tracking-wider">
+                                                <th className="p-4">ID</th>
+                                                <th className="p-4">Vehicle</th>
+                                                <th className="p-4">Route</th>
+                                                <th className="p-4">Departure</th>
+                                                <th className="p-4">Load</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50 text-xs text-gray-600">
+                                            {activeSchedules.length === 0 ? (
+                                                <tr><td colSpan="5" className="p-8 text-center text-gray-400">No upcoming routes deployed.</td></tr>
+                                            ) : activeSchedules.map(sched => {
+                                                const load = Math.round(((sched.booked_seats || 0) / (sched.total_seats || 40)) * 100);
+                                                return (
+                                                    <tr key={sched.schedule_id} className="hover:bg-gray-50/70 transition">
+                                                        <td className="p-4 font-mono font-bold text-gray-400">#{sched.schedule_id}</td>
+                                                        <td className="p-4">
+                                                            <div className="font-bold text-gray-800">🚌 {sched.bus_number}</div>
+                                                            <div className="text-[10px] text-gray-400">{sched.bus_type}</div>
+                                                        </td>
+                                                        <td className="p-4 font-semibold text-gray-800">{sched.origin} → {sched.destination}</td>
+                                                        <td className="p-4 text-gray-500">
+                                                            {new Date(sched.departure_time).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <div className="space-y-1.5 max-w-[140px]">
+                                                                <div className="flex justify-between text-[10px] font-bold">
+                                                                    <span className="text-blue-600">{sched.booked_seats || 0}/{sched.total_seats} Booked</span>
+                                                                    <span className={load > 80 ? 'text-amber-600' : 'text-gray-400'}>{load}%</span>
+                                                                </div>
+                                                                <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                                                    <div
+                                                                        className={`h-full rounded-full transition-all duration-500 ${load > 80 ? 'bg-amber-500' : 'bg-blue-600'}`}
+                                                                        style={{ width: `${Math.min(load, 100)}%` }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div className="bg-white border border-gray-200 rounded-xl p-6 mt-6">
                                 <h3 className="text-sm font-semibold text-gray-900 mb-1">Getting started</h3>
                                 <p className="text-xs text-gray-500 mb-4">Follow these steps to get your first booking.</p>
                                 <div className="space-y-3">
@@ -333,9 +406,15 @@ export default function OperatorDashboard() {
                                 {/* Bus selection */}
                                 <div className="p-6 space-y-4">
                                     <h3 className="text-sm font-semibold text-gray-900">Bus assignment</h3>
-                                    <Field label="Bus ID" hint="From your registered fleet">
-                                        <input name="bus_id" type="number" placeholder="e.g. 3" required
-                                            value={scheduleForm.bus_id} onChange={handleScheduleChange} className={inputClass} />
+                                    <Field label="Select Bus" hint="From your registered fleet">
+                                        <select name="bus_id" value={scheduleForm.bus_id} onChange={handleScheduleChange} className={inputClass} required>
+                                            <option value="">— Choose a vehicle —</option>
+                                            {myBuses.map(bus => (
+                                                <option key={bus.bus_id} value={bus.bus_id}>
+                                                    🚌 {bus.bus_number} ({bus.bus_type}) — {bus.total_seats} seats
+                                                </option>
+                                            ))}
+                                        </select>
                                     </Field>
                                 </div>
 
