@@ -1,6 +1,7 @@
 const pool = require('../config/db');
+const crypto = require('crypto');
 
-const generatePNR = () => 'NXS' + Math.random().toString(36).substring(2, 8).toUpperCase();
+const generatePNR = () => 'NXS' + crypto.randomBytes(3).toString('hex').toUpperCase();
 
 const createBooking = async (req, res) => {
     const client = await pool.connect();
@@ -57,6 +58,11 @@ const createBooking = async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Booking transaction aborted:', error);
+        if (error.code === '23505') {
+            return res.status(409).json({
+                error: 'The selected seat was just reserved by another passenger. Please choose a different seat.'
+            });
+        }
         return res.status(500).json({ error: 'Internal server error processing your reservation.' });
     } finally {
         client.release();
