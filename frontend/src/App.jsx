@@ -13,13 +13,13 @@ import UserProfile from './components/UserProfile';
 const ToastContext = createContext();
 export const useToast = () => useContext(ToastContext);
 
+/* ─── Header ─────────────────────────────────────────────────────────────── */
 function Header({ onAuthClick, onProfileClick, onSearchClick, onLogout }) {
     const { user, logout } = useAuth();
     const handleLogout = () => { logout(); onLogout?.(); };
     return (
-        <header className="sticky top-0 z-40 glass border-b border-white/60 shadow-sm shadow-slate-200/50">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-                {/* Logo */}
+        <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/70 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
                 <button onClick={onSearchClick} className="flex items-center gap-2.5 group">
                     <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-200 group-hover:shadow-blue-300 transition-shadow">
                         <span className="text-white text-sm font-black">N</span>
@@ -29,7 +29,6 @@ function Header({ onAuthClick, onProfileClick, onSearchClick, onLogout }) {
                     </span>
                 </button>
 
-                {/* Nav */}
                 <div className="flex items-center gap-1.5">
                     {user ? (
                         <>
@@ -55,7 +54,7 @@ function Header({ onAuthClick, onProfileClick, onSearchClick, onLogout }) {
                             <button onClick={() => onAuthClick('login')} className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
                                 Sign in
                             </button>
-                            <button onClick={() => onAuthClick('register')} className="text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-4 py-1.5 rounded-lg transition-all shadow-sm shadow-blue-200 hover:shadow-blue-300">
+                            <button onClick={() => onAuthClick('register')} className="text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-4 py-1.5 rounded-lg transition-all shadow-sm shadow-blue-200">
                                 Get started
                             </button>
                         </>
@@ -66,34 +65,49 @@ function Header({ onAuthClick, onProfileClick, onSearchClick, onLogout }) {
     );
 }
 
+/* ─── Data ────────────────────────────────────────────────────────────────── */
 const POPULAR_ROUTES = [
-    { from: 'Chennai', to: 'Bangalore', duration: '6h', price: '₹350', emoji: '🌆' },
-    { from: 'Mumbai', to: 'Pune', duration: '3h', price: '₹250', emoji: '🏙️' },
-    { from: 'Delhi', to: 'Agra', duration: '4h', price: '₹300', emoji: '🕌' },
-    { from: 'Hyderabad', to: 'Vijayawada', duration: '5h', price: '₹280', emoji: '🌉' },
-    { from: 'Bangalore', to: 'Goa', duration: '9h', price: '₹650', emoji: '🏖️' },
-    { from: 'Kolkata', to: 'Bhubaneswar', duration: '7h', price: '₹420', emoji: '🏛️' },
+    { from: 'Chennai',   to: 'Bangalore',   duration: '6h', price: '₹350', emoji: '🌆' },
+    { from: 'Mumbai',    to: 'Pune',        duration: '3h', price: '₹250', emoji: '🏙️' },
+    { from: 'Delhi',     to: 'Agra',        duration: '4h', price: '₹300', emoji: '🕌' },
+    { from: 'Hyderabad', to: 'Vijayawada',  duration: '5h', price: '₹280', emoji: '🌉' },
+    { from: 'Bangalore', to: 'Goa',         duration: '9h', price: '₹650', emoji: '🏖️' },
+    { from: 'Kolkata',   to: 'Bhubaneswar', duration: '7h', price: '₹420', emoji: '🏛️' },
+];
+
+const STATS = [
+    { value: '500+',  label: 'Intercity Routes' },
+    { value: '1.2M+', label: 'Happy Passengers' },
+    { value: '4.8★',  label: 'Rating Consensus' },
+    { value: '200+',  label: 'Verified Operators' },
 ];
 
 const FEATURES = [
-    { icon: '⚡', title: 'Instant Booking', desc: 'Confirm your seat in under 60 seconds', color: 'from-amber-400 to-orange-500' },
-    { icon: '🔒', title: 'Secure Payments', desc: 'Bank-grade encryption on every transaction', color: 'from-emerald-400 to-teal-500' },
-    { icon: '🚌', title: '500+ Routes', desc: 'Covering major cities across India', color: 'from-blue-400 to-indigo-500' },
-    { icon: '🗺️', title: 'Live Seat Map', desc: 'See real-time availability before you book', color: 'from-violet-400 to-purple-500' },
+    { icon: '⚡', title: 'Instant Booking',   desc: 'Confirm your seat in under 60 seconds',        color: 'from-amber-400 to-orange-500' },
+    { icon: '🔒', title: 'Secure Payments',   desc: 'Bank-grade encryption on every transaction',   color: 'from-emerald-400 to-teal-500' },
+    { icon: '🚌', title: '500+ Routes',       desc: 'Covering major cities across India',            color: 'from-blue-400 to-indigo-500'  },
+    { icon: '🗺️', title: 'Live Seat Map',     desc: 'See real-time availability before you book',   color: 'from-violet-400 to-purple-500'},
 ];
 
+const REVIEWS = [
+    { name: 'Harish M.', route: 'Chennai → Bangalore', stars: 5, text: 'The digital seat selection perfectly matched the vehicle layout. Zero issues checking in with the conductor.' },
+    { name: 'Priya R.',  route: 'Mumbai → Pune',       stars: 5, text: 'Incredibly fast booking. Got my PNR receipt on the dashboard within 5 seconds of confirming.' },
+    { name: 'Aman K.',   route: 'Delhi → Agra',        stars: 5, text: 'As an operator, the passenger manifest saves us hours of paperwork at the terminal every morning.' },
+];
+
+/* ─── Landing ─────────────────────────────────────────────────────────────── */
 function LandingContent({ onSearchExecute, onRouteClick }) {
     return (
-        <>
-            {/* Hero */}
-            <div className="hero-mesh relative overflow-hidden px-6 pt-20 pb-32">
-                {/* Decorative blobs */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-indigo-500/20 blur-3xl" />
-                    <div className="absolute top-1/2 -left-24 w-72 h-72 rounded-full bg-blue-400/20 blur-3xl" />
+        <div className="w-full overflow-x-hidden">
+
+            {/* ① Full-bleed hero */}
+            <div className="w-full relative bg-gradient-to-br from-blue-700 via-indigo-800 to-blue-900 pt-16 pb-36 px-4 overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-indigo-500/20 blur-3xl" />
+                    <div className="absolute bottom-0 -left-24 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl" />
                 </div>
 
-                <div className="relative z-10 text-center max-w-2xl mx-auto animate-fade-up">
+                <div className="relative z-10 max-w-3xl mx-auto text-center animate-fade-up">
                     <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-blue-100 text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/20 mb-5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         🇮🇳 India's smartest bus booking platform
@@ -108,17 +122,31 @@ function LandingContent({ onSearchExecute, onRouteClick }) {
                 </div>
             </div>
 
-            {/* Search card — overlaps hero */}
-            <div className="max-w-4xl mx-auto px-4 -mt-14 relative z-10 animate-fade-up-delay">
-                <SearchDashboard onSearchExecute={onSearchExecute} />
+            {/* ② Search card — floats over hero bottom edge */}
+            <div className="w-full px-4 -mt-20 relative z-10">
+                <div className="max-w-5xl mx-auto">
+                    <SearchDashboard onSearchExecute={onSearchExecute} />
+                </div>
             </div>
 
-            {/* Features strip */}
-            <div className="max-w-4xl mx-auto px-4 mt-10 animate-fade-up-delay-2">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {FEATURES.map((f) => (
-                        <div key={f.title} className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
-                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center text-lg mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform`}>
+            {/* ③ Full-bleed stats bar */}
+            <div className="w-full bg-white border-y border-slate-100 mt-10">
+                <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100">
+                    {STATS.map(s => (
+                        <div key={s.label} className="text-center px-6 py-2">
+                            <p className="text-3xl font-black text-slate-900 tracking-tight">{s.value}</p>
+                            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mt-1">{s.label}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ④ Feature cards — constrained */}
+            <div className="max-w-7xl mx-auto px-4 mt-14">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {FEATURES.map(f => (
+                        <div key={f.title} className="bg-white border border-slate-200 rounded-2xl p-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group">
+                            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center text-xl mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform`}>
                                 {f.icon}
                             </div>
                             <p className="text-sm font-bold text-slate-900">{f.title}</p>
@@ -128,14 +156,14 @@ function LandingContent({ onSearchExecute, onRouteClick }) {
                 </div>
             </div>
 
-            {/* Popular routes */}
-            <div className="max-w-4xl mx-auto px-4 mt-12">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-slate-900">Popular routes</h2>
+            {/* ⑤ Popular routes — constrained */}
+            <div className="max-w-7xl mx-auto px-4 mt-14">
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Popular routes</h2>
                     <span className="text-xs text-slate-400 font-medium">Tap to search</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {POPULAR_ROUTES.map((route) => (
+                    {POPULAR_ROUTES.map(route => (
                         <button
                             key={`${route.from}-${route.to}`}
                             onClick={() => onRouteClick(route.from, route.to)}
@@ -151,7 +179,7 @@ function LandingContent({ onSearchExecute, onRouteClick }) {
                                 <span className="text-xs text-blue-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Book →</span>
                             </div>
                             <div className="flex items-center gap-2 text-xs text-slate-500">
-                                <span className="flex items-center gap-1">🕐 {route.duration}</span>
+                                <span>🕐 {route.duration}</span>
                                 <span className="text-slate-300">·</span>
                                 <span className="text-emerald-600 font-semibold">from {route.price}</span>
                             </div>
@@ -160,68 +188,119 @@ function LandingContent({ onSearchExecute, onRouteClick }) {
                 </div>
             </div>
 
-            {/* Operator CTA */}
-            <div className="max-w-4xl mx-auto px-4 mt-12">
-                <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6">
-                    <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+            {/* ⑥ Full-bleed reviews section */}
+            <div className="w-full bg-slate-50 border-y border-slate-100 mt-16 py-16 px-4">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-10">
+                        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Trusted by thousands of commuters</h2>
+                        <p className="text-sm text-slate-500 mt-1">Real passengers. Real journeys.</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        {REVIEWS.map((r, i) => (
+                            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex gap-0.5 mb-3">
+                                    {Array.from({ length: r.stars }).map((_, j) => (
+                                        <span key={j} className="text-amber-400 text-sm">★</span>
+                                    ))}
+                                </div>
+                                <p className="text-sm text-slate-600 italic leading-relaxed flex-1">"{r.text}"</p>
+                                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
+                                    <span className="text-xs font-bold text-slate-800">{r.name}</span>
+                                    <span className="text-xs text-blue-600 font-semibold">{r.route}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ⑦ Operator CTA — constrained */}
+            <div className="max-w-7xl mx-auto px-4 mt-14 mb-2">
+                <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-10 flex flex-col sm:flex-row items-center gap-6">
+                    <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
                     <div className="flex-1 relative z-10">
                         <span className="inline-block text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full mb-3">For operators</span>
-                        <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight">Run a bus service?</h2>
-                        <p className="text-slate-400 text-sm leading-relaxed">Register your fleet, create schedules, and manage passenger bookings — all from one dashboard.</p>
+                        <h2 className="text-2xl font-extrabold text-white mb-2 tracking-tight">Run a bus service?</h2>
+                        <p className="text-slate-400 text-sm leading-relaxed max-w-md">Register your fleet, create schedules, and manage passenger bookings — all from one dashboard.</p>
                     </div>
                     <div className="shrink-0 relative z-10">
-                        <button className="bg-white text-slate-900 font-bold text-sm px-6 py-3 rounded-xl hover:bg-slate-100 transition-colors shadow-lg whitespace-nowrap">
+                        <button className="bg-white text-slate-900 font-bold text-sm px-7 py-3.5 rounded-xl hover:bg-slate-100 transition-colors shadow-lg whitespace-nowrap">
                             Join as Operator →
                         </button>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
+/* ─── Footer ──────────────────────────────────────────────────────────────── */
 function Footer() {
+    const FOOTER_COLS = [
+        {
+            title: 'Top Routes',
+            links: ['Chennai to Bangalore', 'Mumbai to Pune', 'Delhi to Agra', 'Hyderabad to Bangalore', 'Bangalore to Goa'],
+        },
+        {
+            title: 'Support',
+            links: ['Help Center', 'Ticket Cancellation', 'Refund Policies', 'Contact Us'],
+        },
+        {
+            title: 'Operators',
+            links: ['Register Fleet', 'Manifest Dashboard', 'Analytics Logs', 'Operator Guidelines'],
+        },
+        {
+            title: 'Company',
+            links: ['About NexusBus', 'Careers', 'Press', 'Privacy Policy', 'Terms of Service'],
+        },
+    ];
+
     return (
-        <footer className="mt-20 border-t border-slate-200 bg-white">
-            <div className="max-w-4xl mx-auto px-4 py-12">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
-                                <span className="text-white text-xs font-black">N</span>
+        <footer className="w-full bg-gray-950 text-gray-400 mt-16">
+            <div className="max-w-7xl mx-auto px-4 pt-14 pb-8">
+                {/* Top row */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-12">
+                    {/* Brand */}
+                    <div className="col-span-2 md:col-span-1">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                                <span className="text-white text-sm font-black">N</span>
                             </div>
-                            <span className="font-extrabold text-slate-900">NexusBus</span>
+                            <span className="font-extrabold text-white text-base">NexusBus</span>
                         </div>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                            India's modern bus booking platform. Fast, reliable, secure.
+                        <p className="text-xs text-gray-500 leading-relaxed">
+                            India's premium integrated cloud transit engine. Streamlining intercity mobility for operators and passengers nationwide.
                         </p>
                     </div>
 
-                    {[
-                        { title: 'Product', links: ['Search Routes', 'Seat Selection', 'Operator Dashboard'] },
-                        { title: 'Company', links: ['About', 'Careers', 'Contact'] },
-                        { title: 'Legal', links: ['Privacy Policy', 'Terms of Service', 'Refund Policy'] },
-                    ].map(col => (
+                    {/* Link columns */}
+                    {FOOTER_COLS.map(col => (
                         <div key={col.title}>
-                            <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">{col.title}</p>
-                            <ul className="space-y-2">
+                            <p className="text-xs font-bold text-white uppercase tracking-wider mb-4">{col.title}</p>
+                            <ul className="space-y-2.5">
                                 {col.links.map(link => (
-                                    <li key={link} className="text-xs text-slate-500 hover:text-slate-800 cursor-pointer transition-colors">{link}</li>
+                                    <li key={link} className="text-xs text-gray-500 hover:text-gray-200 cursor-pointer transition-colors">{link}</li>
                                 ))}
                             </ul>
                         </div>
                     ))}
                 </div>
 
-                <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <p className="text-xs text-slate-400">© 2026 NexusBus. All rights reserved.</p>
-                    <p className="text-xs text-slate-400">Built with React + Node.js + PostgreSQL</p>
+                {/* Bottom bar */}
+                <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-gray-600">
+                    <p>© 2026 NexusBus. All rights reserved.</p>
+                    <div className="flex items-center gap-5">
+                        <span className="hover:text-gray-400 cursor-pointer transition-colors">Privacy Policy</span>
+                        <span className="hover:text-gray-400 cursor-pointer transition-colors">Terms of Service</span>
+                        <span className="hover:text-gray-400 cursor-pointer transition-colors">Refund Policy</span>
+                    </div>
                 </div>
             </div>
         </footer>
     );
 }
 
+/* ─── Passenger workspace ─────────────────────────────────────────────────── */
 function PassengerWorkspace({ onAuthClick }) {
     const { selectedSchedule, setSelectedSchedule } = useBooking();
     const { showToast } = useToast();
@@ -255,9 +334,7 @@ function PassengerWorkspace({ onAuthClick }) {
         }
     };
 
-    const handleRouteClick = (from, to) => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    const handleRouteClick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     return (
         <div>
@@ -267,7 +344,7 @@ function PassengerWorkspace({ onAuthClick }) {
                     <Footer />
                 </>
             ) : (
-                <main className="max-w-4xl mx-auto px-4 py-8">
+                <main className="max-w-5xl mx-auto px-4 py-8">
                     <SearchDashboard onSearchExecute={executeSchedulesFetch} />
 
                     <button
@@ -281,9 +358,7 @@ function PassengerWorkspace({ onAuthClick }) {
                     <div className="mt-6">
                         {loading && (
                             <div className="space-y-3">
-                                {[1,2,3].map(i => (
-                                    <div key={i} className="skeleton h-24 rounded-2xl" />
-                                ))}
+                                {[1, 2, 3].map(i => <div key={i} className="skeleton h-24 rounded-2xl" />)}
                             </div>
                         )}
 
@@ -305,7 +380,7 @@ function PassengerWorkspace({ onAuthClick }) {
                             </div>
                         )}
 
-                        {!loading && schedulesList.map((schedule) => (
+                        {!loading && schedulesList.map(schedule => (
                             <div key={schedule.schedule_id}>
                                 <BusResultCard
                                     schedule={schedule}
@@ -333,6 +408,7 @@ function PassengerWorkspace({ onAuthClick }) {
     );
 }
 
+/* ─── App shell ───────────────────────────────────────────────────────────── */
 function AppShell() {
     const { user } = useAuth();
     const [authModal, setAuthModal] = useState(null);
@@ -340,24 +416,23 @@ function AppShell() {
     const [passengerView, setPassengerView] = useState('search');
     const showToast = (message, type = 'error') => setToast({ message, type });
 
-    const handleLogoutAndReset = () => {
-        setPassengerView('search');
-    };
-
     return (
         <ToastContext.Provider value={{ showToast }}>
             <BookingProvider>
                 <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
-                    <Header onAuthClick={(tab) => setAuthModal(tab)} onProfileClick={() => setPassengerView('profile')} onSearchClick={() => setPassengerView('search')} onLogout={handleLogoutAndReset} />
+                    <Header
+                        onAuthClick={tab => setAuthModal(tab)}
+                        onProfileClick={() => setPassengerView('profile')}
+                        onSearchClick={() => setPassengerView('search')}
+                        onLogout={() => setPassengerView('search')}
+                    />
 
                     {user?.role === 'OPERATOR' ? (
-                        <main className="max-w-6xl mx-auto px-4 py-8">
-                            <OperatorDashboard />
-                        </main>
+                        <OperatorDashboard />
                     ) : user && passengerView === 'profile' ? (
                         <UserProfile />
                     ) : (
-                        <PassengerWorkspace onAuthClick={(tab) => setAuthModal(tab)} />
+                        <PassengerWorkspace onAuthClick={tab => setAuthModal(tab)} />
                     )}
 
                     {authModal && <AuthModal onClose={() => setAuthModal(null)} />}
